@@ -1,0 +1,32 @@
+Use commas to separate multiple email addresses
+Your message has been sent.
+There was an error emailing this page.
+
+
+By Paul Krill
+
+
+Editor at Large,
+InfoWorld |
+Mar 16, 2018
+
+
+Atom, the text editor developed by GitHub Atom and built on the Electron framework, has been upgraded with improvements centered on GitHub packaging as well as Python and HTML language capabilities. And a new beta is also on the way.
+You can download Atom from the project website.
+Capabilities planned for the Atom 1.26 beta, available in the Atom beta channel, include:
+Released to the “hackable” editor’s stable channel on March 15, 2018, here are the improvements in the latest version:
+Atom is being fitted with IDE-like capabilities as a precursor to making the editor a full-fledged IDE.
+The first step in Atom’s transition from text editor to IDE is an optional package of features developed with Facebook called Atom-IDE, released in September 2017.
+The package includes:
+The initial release has packages for TypeScript, Flow, JavaScript, C#, and PHP. These packages use language servers to analyze code and projects. GitHub thus joins other companies such as Microsoft and Red Hat that have supported the language server protocol. Support is likely later for Rust, Go, and Python.
+GitHub says that, if a language server exists for a language, it is easy for developers to create their own Atom-IDE package that takes advantage of it by using the Atom language client NPM library. This provides common automatic wire-up to major features as well as helper tools such as downloading support files and conversions.
+To get started with Atom-IDE, developers have to bring up Atom’s Install package dialog, then search for and install the atom-ide-ui package to activate the IDE user interface and install needed language support, such as ide-typescript , ide-flowtype,  ide-csharp,  ide-java, and ide-php.
+To improve Git integration in version 1.20, diff views have been reworked to provide pending pane support and multiple simultaneous views. In addition, users are now able to compose commit messages in the main editor—“for those not into the whole brevity thing,” according to the documentation.
+Atom 1.20 also features fixes for PHP grammar. To improve find and replace capabilities, context lines in the 1.20 release are optionally displayed with “Find in Project” results. Users can set the number of available lines before and after matches in the package settings and can modify the display inline when viewing results.
+In the Atom 1.19 release, a native C++ text buffer boosts responsiveness and memory usage. Saving a file happens asynchronously without blocking the UI. Also, large files now consume less memory.
+The DOM interaction layer was rewritten to improve performance and simplify code. The rewritten layer leverages new browser features and virtual DOM capabilities. The rewrite also was intended to accommodate APIs including CSS containment boundaries, for limiting the scope of the browser’s styles and layout, and resize observers, which notify when an element’s content rectangle has changed size.
+The 1.17 edition of Atom introduced a new UI component called “docks,” which is a way to provide side- or bottom-dockable tool panels in the editor. IDEs like Visual Studio and Eclipse have had dock-like components for some time, but now Atom is adding such a component as a core element.
+Atom developers can take advantage of a high-level API for manipulating docks, so that “tool panels written by different package authors [can] coherently share screen real estate,” according to GitHub’s blog announcement.
+One of the first add-ons to use the dock metaphor is the beta GitHub for Atom. With it, a developer can use a side panel in whatever current view is in focus to stage changes, create commits, work with different code branches, and resolve merge conflicts.
+Paul Krill is an editor at large at InfoWorld, whose coverage focuses on application development.
+Copyright © 2018 IDG Communications, Inc.

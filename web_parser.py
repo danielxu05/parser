@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import sys
-
+from sets import Set
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -70,15 +70,17 @@ class Bruter(object):
 
     def link_operation(self,pos_tags,tag):
         pictag = [".png", ".gif", ".jpg", ".jpeg", ".tif"]
+        set = Set()
         for x in pos_tags[tag]:
-            temp = self.links_operation(x)+'\n'
+            temp = self.links_operation(x)
             for z in pictag:
                 if z in x:
-                    self.write_into_file('pic_links.txt', 'a', temp)
-                    print(temp)
+                    self.write_into_file('pic_links.txt', 'a', temp+'\n')
                 else:
-                    self.write_into_file('links.txt','a',temp)
-                    print temp
+                    if temp not in set:
+                        self.write_into_file('links.txt','a',temp+'\n')
+                        set.add(temp)
+
 
     def links_operation(self,url):
         if (url[:4] == "http"):
@@ -109,7 +111,7 @@ class Bruter(object):
         self.link_operation(post_tags,'src')
 
 
-target_url = "https://www.infoworld.com/article/3263904/development-tools/whats-new-in-githubs-atom-text-editor.html"
+target_url = "https://www.facebook.com/josh.ryan.731/photos?lst=100008955589475%3A100002884971023%3A1523412190&source_ref=pb_friends_tl"
 #target_url = "http://testphp.vulnweb.com/"
 #target_url = "http://127.0.0.1/html/login/login.php"
 bruter_obj = Bruter(target_url)

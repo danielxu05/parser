@@ -1,16 +1,20 @@
 import Queue
-import urllib2
-
 import os.path
-import time
+import urllib2
+from operator import attrgetter
 
-from PIL.ExifTags import TAGS,GPSTAGS
-from PIL import Image
 import reverse_geocode
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
 
-class picture_info():
-    def __init__(self):
-        time = ""
+
+class picture_info(object):
+    #class object for picture information
+    def __init__(self,name,time,num_gps,city):
+        self.name = name
+        self.time = time
+        self.gps = num_gps
+        self.city = city
 
 def build_wordlist(wordlist_file):
     # read in the word list
@@ -41,6 +45,7 @@ def build_wordlist(wordlist_file):
 
 
 def download(url):
+    #download the image through link
     file_name = url.split('/')[-1]
     u = urllib2.urlopen(url)
     f = open(file_name, 'wb')
@@ -54,7 +59,6 @@ def download(url):
         buffer = u.read(block_sz)
         if not buffer:
             break
-
         file_size_dl += len(buffer)
         f.write(buffer)
         status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
@@ -64,13 +68,14 @@ def download(url):
     pass
 
 def write_into_file(nfile,way,content):
+    #write into a file
     f = open(nfile, way)
     f.write(content)
     f.close()
     pass
 
 def _convert_to_degress(value):
-    """Helper function to convert the GPS coordinates stored in the EXIF to degress in float format"""
+    #transfer the GEOlocation into longtitude and latitude
     d0 = value[0][0]
     d1 = value[0][1]
     d = float(d0) / float(d1)
@@ -87,7 +92,7 @@ def _convert_to_degress(value):
 
 
 def get_exif_data(image):
-    """Returns a dictionary from the exif data of an PIL Image item. Also converts the GPS Tags"""
+    #get exif data from the image
     exif_data = {}
     info = image._getexif()
     if info:
@@ -106,7 +111,7 @@ def get_exif_data(image):
 
 
 def get_lat_lon(exif_data):
-    """Returns the latitude and longitude, if available, from the provided exif_data (obtained through get_exif_data above)"""
+    #Get the latitude and longitiude
     lat = None
     lon = None
 
@@ -130,44 +135,45 @@ def get_lat_lon(exif_data):
 
 
 def _get_if_exist(data, key):
+    #check whether there is data type in that image
     if key in data:
         return data[key]
     return None
 
 
+def write_into_file(nfile,way,content):
+    #write into a file
+    f = open(nfile, way)
+    f.write(content)
+    f.close()
+
 def main():
+    filelist = list()
     for filename in os.listdir("pictures"):
-        im = Image.open("pictures/"+filename)
-        imifd = get_exif_data(im)
-        print(filename)
-        print(imifd['DateTimeDigitized'])
         try:
-            gpsdata = get_lat_lon(imifd)
-            print gpsdata
-            print(reverse_geocode.get(gpsdata))
-        except(KeyError):
-            print('No GPS data avaiable')
-        print("--------------->>>>>>>>>>>>>>>>>>>>>")
+            im = Image.open("pictures/"+filename)
+            imifd = get_exif_data(im)
+            print(filename)
+            print(imifd['DateTimeDigitized'])
+            gpsdata = ""
+            city = ""
+            try:
+                gpsdata = get_lat_lon(imifd)
+                print gpsdata
+                city = reverse_geocode.get(gpsdata)
+                print(city)
+            except(KeyError):
+                print('No GPS data avaiable')
+            print("--------------->>>>>>>>>>>>>>>>>>>>>")
+            temp = picture_info(filename,imifd['DateTimeDigitized'],gpsdata,city)
+            filelist.append(temp)
+        except:(IOError)
+    filelist.sort(key=attrgetter('time'))
+    for x in filelist:
+        temp = x.name + "  " + " " + x.time + " " + " " + str(x.city) + " " + str(x.gps)
+        print(temp)
+        write_into_file("result.txt",'a',temp+'\n')
 
-
-w_nfile = "https://idge.staticworld.net/ifw/IFW_logo_social_300x300.png"
-#download("https://www.infoworld.com/article/3263904/development-tools/whats-new-in-githubs-atom-text-editor.amp.html")
-
-file = "data/image/test2.jpg"
-print 'File         :', file
-print 'Access time  :', time.ctime(os.path.getatime(file))
-print 'Modified time:', time.ctime(os.path.getmtime(file))
-print 'Change time  :', time.ctime(os.path.getctime(file))
-print 'Size         :', os.path.getsize(file)
-
-
-im = Image.open(file)
-try:
-    info = im._getexif()
-except (AttributeError,KeyError,IndexError):
-    info = None
-print(info)
-print(get_exif_data(im))
 
 print("-------------------------------------------------------")
 

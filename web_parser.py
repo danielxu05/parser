@@ -1,4 +1,5 @@
 import threading
+import urllib
 from HTMLParser import HTMLParser
 
 import requests
@@ -16,6 +17,7 @@ user_thread = 1
 # target specific settings
 # target_url    = "http://appledoreresearch.com/wp-login.php"
 # target_post   = "http://appledoreresearch.com/wp-login.php"
+
 class Dictlist(dict):
     def __setitem__(self, key, value):
         try:
@@ -25,7 +27,7 @@ class Dictlist(dict):
         self[key].append(value)
 
 class BruteParser(HTMLParser):
-
+    #burterparser object
     def __init__(self):
         HTMLParser.__init__(self)
         self.tag_results = Dictlist()
@@ -39,8 +41,6 @@ class BruteParser(HTMLParser):
                 if name in wantedtag:
                     self.tag_results[name] = value
 
-    #def handle_data(self, data):
-        #print(data)
 
 
 class Bruter(object):
@@ -69,26 +69,37 @@ class Bruter(object):
         f.close()
 
     def link_operation(self,pos_tags,tag):
-        pictag = [".png", ".gif", ".jpg", ".jpeg", ".tif"]
+        #get image
+        pictag = [".gif", ".jpg", ".jpeg", ".tif"]
         set = Set()
         for x in pos_tags[tag]:
             temp = self.links_operation(x)
+            set.add(temp)
+        ii = 0
+        for y in list(set):
             for z in pictag:
-                if z in x:
-                    self.write_into_file('pic_links.txt', 'a', temp+'\n')
+                if z in y:
+                    self.write_into_file('pic_links.txt', 'a', y+'\n')
+                    urllib.urlretrieve(y,'pictures/'+str(ii)+'.jpg')
+                    ii = ii + 1
+                    print(y)
                 else:
                     if temp not in set:
-                        self.write_into_file('links.txt','a',temp+'\n')
+                        self.write_into_file('links.txt','a',y+'\n')
                         set.add(temp)
 
 
+
+
     def links_operation(self,url):
+        #make valid links
         if (url[:4] == "http"):
             return url
         else:
-            return self.get_home_url()+url
+            return self.url+url
 
     def web_bruter(self):
+        #get connection and parse the HTML code to classify different type of code
         resp = requests.get(self.url)
         soup = BeautifulSoup(resp.text, 'html.parser')
         content = ""
@@ -107,16 +118,23 @@ class Bruter(object):
         for x,y in post_tags.iteritems():
             print x,"   ", str(len(y))
 
+        print(post_tags)
         self.link_operation(post_tags,'href')
         self.link_operation(post_tags,'src')
 
+    def download_pictures(self,set,dir):
+        #download picture
+        ii = 0
+        for i in set:
+            urllib.urlretrieve(i,ii+".jpg")
 
-target_url = "https://www.facebook.com/josh.ryan.731/photos?lst=100008955589475%3A100002884971023%3A1523412190&source_ref=pb_friends_tl"
+
+target_url = "http://localhost:90/Flatty/"
 #target_url = "http://testphp.vulnweb.com/"
 #target_url = "http://127.0.0.1/html/login/login.php"
 bruter_obj = Bruter(target_url)
 bruter_obj.run_bruteforce()
-print(bruter_obj.get_home_url())
+
 
 
 
